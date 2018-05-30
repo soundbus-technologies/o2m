@@ -24,7 +24,7 @@ type Oauth2Client struct {
 	ID     string `bson:"_id" json:"id"`
 	Secret string `bson:"secret" json:"secret"`
 	Domain string `bson:"domain" json:"domain"`
-	UserID string `bson:"user_id" json:"user_id"`
+	UserID string `bson:"user_id,omitempty" json:"user_id,omitempty"`
 }
 
 func (c *Oauth2Client) GetID() string {
@@ -61,7 +61,7 @@ func CreateClientStore(session *mgo.Session, db string, collection string) (clie
 
 // GetByID according to the ID for the client information
 func (cs *MongoClientStore) GetByID(id string) (cli oauth2.ClientInfo, err error) {
-	session := cs.session
+	session := cs.session.Clone()
 	defer session.Close()
 
 	c := session.DB(cs.db).C(cs.collection)
@@ -76,7 +76,7 @@ func (cs *MongoClientStore) GetByID(id string) (cli oauth2.ClientInfo, err error
 
 // Add a client info
 func (cs *MongoClientStore) Add(client *Oauth2Client) (err error) {
-	session := cs.session
+	session := cs.session.Clone()
 	defer session.Close()
 
 	c := session.DB(cs.db).C(cs.collection)

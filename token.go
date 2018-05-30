@@ -11,7 +11,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
 	"gopkg.in/oauth2.v3/models"
-	"encoding/json"
 )
 
 // TokenConfig token configuration parameters
@@ -29,9 +28,9 @@ type TokenConfig struct {
 }
 
 type basicData struct {
-	ID        string    `bson:"_id"`
-	Data      []byte    `bson:"Data"`
-	ExpiredAt time.Time `bson:"ExpiredAt"`
+	ID        string       `bson:"_id"`
+	Token     models.Token `bson:"Token"`
+	ExpiredAt time.Time    `bson:"ExpiredAt"`
 }
 
 type tokenData struct {
@@ -121,16 +120,27 @@ func (ts *TokenStore) cHandler(name string, handler func(c *mgo.Collection)) {
 
 // Create create and store the new token information
 func (ts *TokenStore) Create(info oauth2.TokenInfo) (err error) {
-	jv, err := json.Marshal(info)
-	if err != nil {
-		return
+	token := models.Token{
+		ClientID:         info.GetClientID(),
+		UserID:           info.GetUserID(),
+		RedirectURI:      info.GetRedirectURI(),
+		Scope:            info.GetScope(),
+		Code:             info.GetCode(),
+		CodeCreateAt:     info.GetCodeCreateAt(),
+		CodeExpiresIn:    info.GetCodeExpiresIn(),
+		Access:           info.GetAccess(),
+		AccessCreateAt:   info.GetAccessCreateAt(),
+		AccessExpiresIn:  info.GetAccessExpiresIn(),
+		Refresh:          info.GetRefresh(),
+		RefreshCreateAt:  info.GetRefreshCreateAt(),
+		RefreshExpiresIn: info.GetRefreshExpiresIn(),
 	}
 
 	if code := info.GetCode(); code != "" {
 		ts.cHandler(ts.tcfg.BasicCName, func(c *mgo.Collection) {
 			err = c.Insert(basicData{
 				ID:        code,
-				Data:      jv,
+				Token:     token,
 				ExpiredAt: info.GetCodeCreateAt().Add(info.GetCodeExpiresIn()),
 			})
 		})
@@ -139,7 +149,7 @@ func (ts *TokenStore) Create(info oauth2.TokenInfo) (err error) {
 
 	aexp := info.GetAccessCreateAt().Add(info.GetAccessExpiresIn())
 	rexp := aexp
-	if refresh := info.GetRefresh(); refresh != "" {
+	if info.GetRefresh() != "" && info.GetRefreshExpiresIn() > 0 {
 		rexp = info.GetRefreshCreateAt().Add(info.GetRefreshExpiresIn())
 		if aexp.Second() > rexp.Second() {
 			aexp = rexp
@@ -151,7 +161,7 @@ func (ts *TokenStore) Create(info oauth2.TokenInfo) (err error) {
 		Id:     id,
 		Assert: txn.DocMissing,
 		Insert: basicData{
-			Data:      jv,
+			Token:     token,
 			ExpiredAt: rexp,
 		},
 	}, {
@@ -236,12 +246,8 @@ func (ts *TokenStore) getData(basicID string) (ti oauth2.TokenInfo, err error) {
 			err = verr
 			return
 		}
-		var tm models.Token
-		err = json.Unmarshal(bd.Data, &tm)
-		if err != nil {
-			return
-		}
-		ti = &tm
+
+		ti = &bd.Token
 	})
 	return
 }
