@@ -59,16 +59,7 @@ func NewDefaultTokenConfig() *TokenConfig {
 }
 
 // NewTokenStore create a token store instance based on mongodb
-func NewTokenStore(cfg *MongoConfig, tcfgs ...*TokenConfig) (store oauth2.TokenStore, err error) {
-	var t *TokenConfig = nil
-	if len(tcfgs) > 0 {
-		t = tcfgs[0]
-	}
-	return CreateTokenStore(NewMongoSession(cfg), t)
-}
-
-// CreateTokenStore create a token store instance based on mongodb
-func CreateTokenStore(session *mgo.Session, tcfgs ...*TokenConfig) (store oauth2.TokenStore, err error) {
+func NewTokenStore(session *mgo.Session, tcfgs ...*TokenConfig) (store oauth2.TokenStore) {
 	ts := &TokenStore{
 		session: session,
 		tcfg:    NewDefaultTokenConfig(),
@@ -77,9 +68,9 @@ func CreateTokenStore(session *mgo.Session, tcfgs ...*TokenConfig) (store oauth2
 		ts.tcfg = tcfgs[0]
 	}
 
-	err = initTokenStore(ts)
+	err := initTokenStore(ts)
 	if err != nil {
-		return
+		panic(err)
 	}
 	store = ts
 	return

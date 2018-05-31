@@ -40,11 +40,7 @@ func (c *Oauth2Client) GetUserID() string {
 	return c.UserID
 }
 
-func NewClientStore(cfg *MongoConfig, db string, collection string) (clientStore *MongoClientStore, err error) {
-	return CreateClientStore(NewMongoSession(cfg), db, collection)
-}
-
-func CreateClientStore(session *mgo.Session, db string, collection string) (clientStore *MongoClientStore, err error) {
+func NewClientStore(session *mgo.Session, db string, collection string) (clientStore *MongoClientStore) {
 	if session == nil {
 		panic("session cannot be nil")
 	}
@@ -75,10 +71,15 @@ func (cs *MongoClientStore) GetByID(id string) (cli oauth2.ClientInfo, err error
 }
 
 // Add a client info
-func (cs *MongoClientStore) Add(client *Oauth2Client) (err error) {
+func (cs *MongoClientStore) Set(id string, cli oauth2.ClientInfo) (err error) {
 	session := cs.session.Clone()
 	defer session.Close()
 
 	c := session.DB(cs.db).C(cs.collection)
-	return c.Insert(client)
+	return c.Insert(&Oauth2Client{
+		ID:     cli.GetID(),
+		UserID: cli.GetUserID(),
+		Domain: cli.GetDomain(),
+		Secret: cli.GetSecret(),
+	})
 }
