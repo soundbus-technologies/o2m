@@ -1,8 +1,8 @@
-# MongoDB Storage for OAuth 2.0 Client Information
+# Oauth2 Mongodb Support
 
 mongodb client,token,user storage for oauth2
 
-usage:
+sample:
 
 ```go
 package main
@@ -18,7 +18,7 @@ import (
 
 func main() {
 	manager := manage.NewDefaultManager()
-    mgoCfg = mongo.MongoConfig{
+    mgoCfg = o2m.MongoConfig{
         Addrs:     []string{"127.0.0.1:27017"},
         Database:  "oauth2",
         Username:  "oauth2",
@@ -26,13 +26,13 @@ func main() {
         PoolLimit: 10,
     }
 
-    mgoSession := mongo.NewMongoSession(&mgoCfg)
+    mgoSession = o2m.NewMongoSession(&mgoCfg)
 
-	store, err := mongo.CreateClientStore(mgoSession, "oauth2", "client")
-	if err != nil {
-		panic(err)
-	}
-	err = store.Add(&mongo.Oauth2Client{
+    ts := o2m.NewTokenStore(mgoSession, mgoDatabase, "token")
+
+    cs := o2m.NewClientStore(mgoSession, mgoDatabase, "client")
+
+	err = cs.Add(&o2m.Oauth2Client{
 		ID:     "000000",
 		Secret: "999999",
 		Domain: "https://www.baidu.com",
@@ -41,10 +41,8 @@ func main() {
         log.Warn("%v\n", err)
     }
 
-    // mongo client store
-    manager.MapClientStorage(store)
-    // mongo token store
-	manager.MustTokenStorage(mongo.CreateTokenStore(mgoSession))
+    manager.MapClientStorage(cs)
+	manager.MustTokenStorage(ts)
 
     ...
 

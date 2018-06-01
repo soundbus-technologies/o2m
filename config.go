@@ -1,4 +1,4 @@
-package mongo
+package o2m
 
 import (
 	"github.com/golang/glog"

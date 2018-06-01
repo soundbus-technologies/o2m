@@ -2,7 +2,7 @@
 // created: 2018-05-30
 // oauth2 user store
 
-package mongo
+package o2m
 
 import (
 	"gopkg.in/mgo.v2"

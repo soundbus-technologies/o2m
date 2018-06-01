@@ -1,7 +1,7 @@
 // ouath2 client mongo store
 // authors: wongoo
 
-package mongo
+package o2m
 
 import (
 	"gopkg.in/oauth2.v3"
