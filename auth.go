@@ -18,9 +18,9 @@ const (
 
 // AuthID = ClientID + "__" + UserID
 type MgoAuth struct {
-	AuthID   string `bson:"_id" json:"_"`
-	ClientID string `bson:"_" json:"client_id"`
-	UserID   string `bson:"_" json:"user_id"`
+	AuthID   string `bson:"_id" json:"-"`
+	ClientID string `bson:"-" json:"client_id"`
+	UserID   string `bson:"-" json:"user_id"`
 	Scope    string `bson:"scope" json:"scope"`
 }
 
