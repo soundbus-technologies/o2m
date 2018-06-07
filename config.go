@@ -1,7 +1,6 @@
 package o2m
 
 import (
-	"github.com/golang/glog"
 	"gopkg.in/mgo.v2"
 	"fmt"
 )
@@ -24,12 +23,11 @@ func NewMongoSession(cfg *MongoConfig) *mgo.Session {
 		Password: cfg.Password,
 	}
 
-	fmt.Printf("dialInfo: %+v\n", dialInfo)
+	fmt.Printf("mongo dial info: %+v\n", dialInfo)
 
-	var err error
 	s, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		glog.Infof("Build MongoDB client err : %v", err.Error())
+		fmt.Printf("connect mongo error: %v\n", err.Error())
 		panic(err)
 	}
 	s.SetMode(mgo.Monotonic, true)
