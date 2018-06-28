@@ -8,29 +8,48 @@ import (
 	"gopkg.in/mgo.v2"
 	"github.com/go2s/o2x"
 	"reflect"
+	"gopkg.in/mgo.v2/bson"
 )
+
+type MgoUserCfg struct {
+	userType reflect.Type
+
+	// password field name
+	passwordName string
+
+	// salt field name
+	saltName string
+}
 
 type MgoUserStore struct {
 	session    *mgo.Session
 	db         string
 	collection string
-	userType   reflect.Type
+	userCfg    *MgoUserCfg
 }
 
-func NewUserStore(session *mgo.Session, db, collection string, userType reflect.Type) (us *MgoUserStore) {
-	if !o2x.IsUserType(userType) {
+func DefaultMgoUserCfg() *MgoUserCfg {
+	return &MgoUserCfg{
+		userType:     o2x.SimpleUserPtrType,
+		passwordName: "password",
+		saltName:     "salt",
+	}
+}
+
+func NewUserStore(session *mgo.Session, db, collection string, userCfg *MgoUserCfg) (us *MgoUserStore) {
+	if !o2x.IsUserType(userCfg.userType) {
 		panic("invalid user type")
 	}
 	us = &MgoUserStore{
 		session:    session,
 		db:         db,
 		collection: collection,
-		userType:   userType,
+		userCfg:    userCfg,
 	}
 	return
 }
 
-func (us *MgoUserStore) cHandler(handler func(c *mgo.Collection)) {
+func (us *MgoUserStore) H(handler func(c *mgo.Collection)) {
 	session := us.session.Clone()
 	defer session.Close()
 	handler(session.DB(us.db).C(us.collection))
@@ -38,15 +57,15 @@ func (us *MgoUserStore) cHandler(handler func(c *mgo.Collection)) {
 }
 
 func (us *MgoUserStore) Save(u o2x.User) (err error) {
-	us.cHandler(func(c *mgo.Collection) {
+	us.H(func(c *mgo.Collection) {
 		err = c.Insert(u)
 	})
 	return
 }
 
-func (us *MgoUserStore) Find(id string) (u o2x.User, err error) {
-	us.cHandler(func(c *mgo.Collection) {
-		user := o2x.NewUser(us.userType)
+func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
+	us.H(func(c *mgo.Collection) {
+		user := o2x.NewUser(us.userCfg.userType)
 		mgoErr := c.FindId(id).One(user)
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
@@ -57,6 +76,22 @@ func (us *MgoUserStore) Find(id string) (u o2x.User, err error) {
 		}
 
 		u = user
+	})
+	return
+}
+
+func (us *MgoUserStore) UpdatePwd(id interface{}, password string) (err error) {
+	user, err := us.Find(id)
+	if err != nil {
+		return
+	}
+
+	user.SetRawPassword(password)
+
+	us.H(func(c *mgo.Collection) {
+		bs := bson.M{us.userCfg.passwordName: user.GetPassword(), us.userCfg.saltName: user.GetSalt()}
+		bs = bson.M{"$set": bs}
+		err = c.UpdateId(id, bs)
 	})
 	return
 }
