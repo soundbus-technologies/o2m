@@ -10,14 +10,8 @@
 [[projects]]
   name = "github.com/go2s/o2x"
   packages = ["."]
-  revision = "5e211eda71745299522d2e3961d4e103d9db89e1"
-  version = "1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/golang/glog"
-  packages = ["."]
-  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+  revision = "966cc377745f25d9c047192b443ff707139781b1"
+  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -61,6 +55,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f7815ca1e230e7daf01ecde6b2e214963be949b89ac4b898b280efc208e43767"
+  inputs-digest = "7ec0cd790782c25cd0269321b1f23fef940d2307c85cc9e80e67fe9e76d755b7"
   solver-name = "gps-cdcl"
   solver-version = 1
