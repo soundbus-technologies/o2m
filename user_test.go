@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/go2s/o2x"
+	"fmt"
 )
 
 const (
@@ -36,6 +37,9 @@ func TestMgoUserStore(t *testing.T) {
 	us := NewUserStore(mgoSession, mgoDatabase, "user", cfg)
 
 	id := bson.ObjectIdHex("5ae6b2005946fa106132365c")
+
+	fmt.Println("user id:", id.String())
+
 	pass := "123456"
 	user, err := us.Find(id)
 	if err != nil {
