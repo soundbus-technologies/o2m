@@ -8,10 +8,10 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/go2s/o2x"
   packages = ["."]
-  revision = "0e19210fb1bd1701ee3c1d7ba9e82db4c94578d4"
-  version = "v1.1.2"
+  revision = "5fe082927828ab760205130d58519b2f94d5f578"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -55,6 +55,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5a544a44d0b65a7fc46011237d7c0e8c732d3e4f54e7bc311a827a9be200fb89"
+  inputs-digest = "be68ae1cdde9645500dc46c38855565fd9ffccbc482b2f0611384bc364ee5423"
   solver-name = "gps-cdcl"
   solver-version = 1

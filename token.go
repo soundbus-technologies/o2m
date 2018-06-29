@@ -63,7 +63,7 @@ func (ts *MgoTokenStore) c(name string) *mgo.Collection {
 	return ts.session.DB(ts.db).C(name)
 }
 
-func (ts *MgoTokenStore) cHandler(name string, handler func(c *mgo.Collection)) {
+func (ts *MgoTokenStore) H(name string, handler func(c *mgo.Collection)) {
 	session := ts.session.Clone()
 	defer session.Close()
 	handler(session.DB(ts.db).C(name))
@@ -73,7 +73,7 @@ func (ts *MgoTokenStore) cHandler(name string, handler func(c *mgo.Collection)) 
 // Create create and store the new token information
 func (ts *MgoTokenStore) Create(info oauth2.TokenInfo) (err error) {
 	token := Copy(info)
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		err = c.Insert(token)
 	})
 	return
@@ -81,7 +81,7 @@ func (ts *MgoTokenStore) Create(info oauth2.TokenInfo) (err error) {
 
 // RemoveByCode use the authorization code to delete the token information
 func (ts *MgoTokenStore) RemoveByCode(code string) (err error) {
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		mgoErr := c.Remove(bson.M{"Code": code})
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
@@ -95,7 +95,7 @@ func (ts *MgoTokenStore) RemoveByCode(code string) (err error) {
 
 // RemoveByAccess use the access token to delete the token information
 func (ts *MgoTokenStore) RemoveByAccess(access string) (err error) {
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		mgoErr := c.RemoveId(access)
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
@@ -109,7 +109,7 @@ func (ts *MgoTokenStore) RemoveByAccess(access string) (err error) {
 
 // RemoveByRefresh use the refresh token to delete the token information
 func (ts *MgoTokenStore) RemoveByRefresh(refresh string) (err error) {
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		mgoErr := c.Remove(bson.M{"Refresh": refresh})
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
@@ -123,15 +123,18 @@ func (ts *MgoTokenStore) RemoveByRefresh(refresh string) (err error) {
 
 // RemoveByAccount remove exists token info by userID and clientID
 func (ts *MgoTokenStore) RemoveByAccount(userID string, clientID string) (err error) {
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		err = c.Remove(bson.M{"UserID": userID, "ClientID": clientID})
+		if err == nil && bson.IsObjectIdHex(userID) {
+			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientID": clientID})
+		}
 	})
 	return
 }
 
 // GetByField use field value for token information data
 func (ts *MgoTokenStore) GetByBson(m bson.M) (ti oauth2.TokenInfo, err error) {
-	ts.cHandler(ts.collection, func(c *mgo.Collection) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
 		token := &TokenData{}
 		mgoErr := c.Find(m).One(token)
 		if mgoErr != nil {
@@ -173,5 +176,8 @@ func (ts *MgoTokenStore) GetByRefresh(refresh string) (ti oauth2.TokenInfo, err 
 // GetByAccount get the exists token info by userID and clientID
 func (ts *MgoTokenStore) GetByAccount(userID string, clientID string) (ti oauth2.TokenInfo, err error) {
 	ti, err = ts.GetByBson(bson.M{"UserID": userID, "ClientID": clientID})
+	if err == nil && ti == nil && bson.IsObjectIdHex(userID) {
+		ti, err = ts.GetByBson(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientID": clientID})
+	}
 	return
 }

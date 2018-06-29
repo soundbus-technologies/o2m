@@ -25,7 +25,7 @@
 
 [[constraint]]
   name = "github.com/go2s/o2x"
-  version = ">=v1.1.2"
+  branch = "master"
 
 [[constraint]]
   name = "gopkg.in/mgo.v2"
