@@ -67,12 +67,19 @@ func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
 	us.H(func(c *mgo.Collection) {
 		user := o2x.NewUser(us.userCfg.userType)
 		mgoErr := c.FindId(id).One(user)
+		if mgoErr != nil && mgoErr == mgo.ErrNotFound {
+			// try to find using object id
+			if sid, ok := id.(string); ok && bson.IsObjectIdHex(sid) {
+				bid := bson.ObjectIdHex(sid)
+				mgoErr = c.FindId(bid).One(user)
+			}
+		}
+
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
 				return
 			}
 			err = mgoErr
-			return
 		}
 
 		u = user
@@ -91,7 +98,7 @@ func (us *MgoUserStore) UpdatePwd(id interface{}, password string) (err error) {
 	us.H(func(c *mgo.Collection) {
 		bs := bson.M{us.userCfg.passwordName: user.GetPassword(), us.userCfg.saltName: user.GetSalt()}
 		bs = bson.M{"$set": bs}
-		err = c.UpdateId(id, bs)
+		err = c.UpdateId(user.GetUserID(), bs)
 	})
 	return
 }

@@ -36,9 +36,9 @@ func TestMgoUserStore(t *testing.T) {
 
 	us := NewUserStore(mgoSession, mgoDatabase, "user", cfg)
 
-	id := bson.ObjectIdHex("5ae6b2005946fa106132365c")
+	id := "5ae6b2005946fa106132365c"
 
-	fmt.Println("user id:", id.String())
+	fmt.Println("user id:", id)
 
 	pass := "123456"
 	user, err := us.Find(id)
@@ -47,7 +47,7 @@ func TestMgoUserStore(t *testing.T) {
 	}
 	if user == nil {
 		user = &o2x.SimpleUser{
-			UserID: id,
+			UserID: bson.ObjectIdHex(id),
 		}
 		err = us.Save(user)
 		if err != nil {
