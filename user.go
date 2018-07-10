@@ -63,6 +63,21 @@ func (us *MgoUserStore) Save(u o2x.User) (err error) {
 	return
 }
 
+func (us *MgoUserStore) Remove(id interface{}) (err error) {
+	us.H(func(c *mgo.Collection) {
+		mgoErr := c.RemoveId(id)
+		if mgoErr != nil && mgoErr == mgo.ErrNotFound {
+			// try to find using object id
+			if sid, ok := id.(string); ok && bson.IsObjectIdHex(sid) {
+				bid := bson.ObjectIdHex(sid)
+				mgoErr = c.RemoveId(bid)
+			}
+		}
+		err = mgoErr
+	})
+	return
+}
+
 func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
 	us.H(func(c *mgo.Collection) {
 		user := o2x.NewUser(us.userCfg.userType)

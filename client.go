@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DefaultOuath2ClientDb         = "oauth2"
-	DefaultOuath2ClientCollection = "client"
+	DefaultOauth2ClientDb         = "oauth2"
+	DefaultOauth2ClientCollection = "client"
 )
 
 // Mongo client store
@@ -46,10 +46,10 @@ func NewClientStore(session *mgo.Session, db string, collection string) (clientS
 	}
 	clientStore = &MongoClientStore{session: session, db: db, collection: collection}
 	if clientStore.db == "" {
-		clientStore.db = DefaultOuath2ClientDb
+		clientStore.db = DefaultOauth2ClientDb
 	}
 	if clientStore.collection == "" {
-		clientStore.collection = DefaultOuath2ClientCollection
+		clientStore.collection = DefaultOauth2ClientCollection
 	}
 
 	return

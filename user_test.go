@@ -61,4 +61,9 @@ func TestMgoUserStore(t *testing.T) {
 
 	assert.True(t, updateUser.Match(pass))
 	assert.False(t, updateUser.Match("password"))
+
+	err = us.Remove(id)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
 }
