@@ -2,9 +2,8 @@ package o2m
 
 import (
 	"gopkg.in/mgo.v2"
-	"fmt"
+	"github.com/golang/glog"
 )
-
 
 // Config mongodb configuration parameters
 type MongoConfig struct {
@@ -23,16 +22,16 @@ func NewMongoSession(cfg *MongoConfig) *mgo.Session {
 		Password: cfg.Password,
 	}
 
-	fmt.Printf("mongo dial info: %+v\n", dialInfo)
+	glog.Infof("mongodb dial info: %+v", dialInfo)
 
 	s, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		fmt.Printf("connect mongo error: %v\n", err.Error())
+		glog.Infof("connect mongodb error: %v", err.Error())
 		panic(err)
 	}
 	s.SetMode(mgo.Monotonic, true)
 	s.SetPoolLimit(cfg.PoolLimit)
 
-	fmt.Printf("mongo connected\n")
+	glog.Infof("mongodb connected")
 	return s
 }
