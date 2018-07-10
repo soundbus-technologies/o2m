@@ -42,7 +42,7 @@ func TestMgoUserStore(t *testing.T) {
 
 	pass := "123456"
 	user, err := us.Find(id)
-	if err != nil {
+	if err != nil && err.Error() != "not found" {
 		assert.Fail(t, err.Error())
 	}
 	if user == nil {

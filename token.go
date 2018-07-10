@@ -9,6 +9,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"time"
 	"gopkg.in/mgo.v2/bson"
+	"github.com/go2s/o2x"
 )
 
 // MgoTokenStore MongoDB storage for OAuth 2.0
@@ -85,6 +86,7 @@ func (ts *MgoTokenStore) RemoveByCode(code string) (err error) {
 		mgoErr := c.Remove(bson.M{"Code": code})
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
+				err = o2x.ErrNotFound
 				return
 			}
 			err = mgoErr
@@ -99,6 +101,7 @@ func (ts *MgoTokenStore) RemoveByAccess(access string) (err error) {
 		mgoErr := c.RemoveId(access)
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
+				err = o2x.ErrNotFound
 				return
 			}
 			err = mgoErr
@@ -113,6 +116,7 @@ func (ts *MgoTokenStore) RemoveByRefresh(refresh string) (err error) {
 		mgoErr := c.Remove(bson.M{"Refresh": refresh})
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
+				err = o2x.ErrNotFound
 				return
 			}
 			err = mgoErr
@@ -139,6 +143,7 @@ func (ts *MgoTokenStore) GetByBson(m bson.M) (ti oauth2.TokenInfo, err error) {
 		mgoErr := c.Find(m).One(token)
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
+				err = o2x.ErrNotFound
 				return
 			}
 			err = mgoErr

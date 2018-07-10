@@ -73,6 +73,10 @@ func (us *MgoUserStore) Remove(id interface{}) (err error) {
 				mgoErr = c.RemoveId(bid)
 			}
 		}
+		if mgoErr != nil && mgoErr == mgo.ErrNotFound {
+			err = o2x.ErrNotFound
+			return
+		}
 		err = mgoErr
 	})
 	return
@@ -92,6 +96,7 @@ func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
 
 		if mgoErr != nil {
 			if mgoErr == mgo.ErrNotFound {
+				err = o2x.ErrNotFound
 				return
 			}
 			err = mgoErr
