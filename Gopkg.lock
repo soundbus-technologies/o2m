@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/go2s/o2x"
   packages = ["."]
-  revision = "5fe082927828ab760205130d58519b2f94d5f578"
+  revision = "42cc8d77f7f84ea883946033c757ea750c58e92e"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -44,7 +44,7 @@
     "internal/sasl",
     "internal/scram"
   ]
-  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
 
 [[projects]]
   name = "gopkg.in/oauth2.v3"
