@@ -7,12 +7,36 @@ import (
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/mgo.v2"
 	"github.com/go2s/o2x"
+	"github.com/patrickmn/go-cache"
+	"time"
 )
 
 const (
 	DefaultOauth2ClientDb         = "oauth2"
 	DefaultOauth2ClientCollection = "client"
 )
+
+var (
+	clientCache *cache.Cache
+)
+
+func init() {
+	// Create a cache with a default expiration time of 5 minutes, and which
+	// purges expired items every 10 minutes
+	clientCache = cache.New(5*time.Minute, 10*time.Minute)
+}
+
+func addClientCache(cli oauth2.ClientInfo) {
+	clientCache.Add(cli.GetID(), cli, cache.DefaultExpiration)
+}
+
+func getClientCache(id string) (cli oauth2.ClientInfo) {
+	if c, found := clientCache.Get(id); found {
+		cli = c.(oauth2.ClientInfo)
+		return
+	}
+	return
+}
 
 // Mongo client store
 type MongoClientStore struct {
@@ -62,6 +86,10 @@ func NewClientStore(session *mgo.Session, db string, collection string) (clientS
 
 // GetByID according to the ID for the client information
 func (cs *MongoClientStore) GetByID(id string) (cli oauth2.ClientInfo, err error) {
+	if cli = getClientCache(id); cli != nil {
+		return
+	}
+
 	session := cs.session.Clone()
 	defer session.Close()
 
@@ -72,6 +100,8 @@ func (cs *MongoClientStore) GetByID(id string) (cli oauth2.ClientInfo, err error
 	if err != nil {
 		return nil, err
 	}
+
+	addClientCache(client)
 	return client, nil
 }
 
@@ -91,5 +121,6 @@ func (cs *MongoClientStore) Set(id string, cli oauth2.ClientInfo) (err error) {
 	if oauth2Client, ok := cli.(o2x.Oauth2ClientInfo); ok {
 		client.Scope = oauth2Client.GetScope()
 	}
+	addClientCache(client)
 	return c.Insert(client)
 }

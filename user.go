@@ -10,7 +10,37 @@ import (
 	"reflect"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/golang/glog"
+	"github.com/patrickmn/go-cache"
+	"time"
+	"fmt"
 )
+
+var (
+	userCache *cache.Cache
+)
+
+func init() {
+	// Create a cache with a default expiration time of 5 minutes, and which
+	// purges expired items every 10 minutes
+	userCache = cache.New(5*time.Minute, 10*time.Minute)
+}
+
+func addUserCache(user o2x.User) {
+	if user.GetUserID() != nil {
+		userCache.Add(fmt.Sprint(user.GetUserID()), user, cache.DefaultExpiration)
+	}
+}
+
+func getUserCache(id interface{}) (user o2x.User) {
+	if c, found := userCache.Get(fmt.Sprint(id)); found {
+		user = c.(o2x.User)
+		return
+	}
+	return
+}
+func removeUserCache(id interface{}) {
+	userCache.Delete(fmt.Sprint(id))
+}
 
 type MgoUserCfg struct {
 	userType reflect.Type
@@ -62,10 +92,18 @@ func (us *MgoUserStore) Save(u o2x.User) (err error) {
 		glog.Infof("insert user:%v", u)
 		err = c.Insert(u)
 	})
+
+	if err != nil {
+		return
+	}
+	addUserCache(u)
+
 	return
 }
 
 func (us *MgoUserStore) Remove(id interface{}) (err error) {
+	removeUserCache(id)
+
 	us.H(func(c *mgo.Collection) {
 		glog.Infof("remove user:%v", id)
 		mgoErr := c.RemoveId(id)
@@ -86,6 +124,10 @@ func (us *MgoUserStore) Remove(id interface{}) (err error) {
 }
 
 func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
+	if u = getUserCache(id); u != nil {
+		return
+	}
+
 	us.H(func(c *mgo.Collection) {
 		user := o2x.NewUser(us.userCfg.userType)
 		mgoErr := c.FindId(id).One(user)
@@ -107,6 +149,15 @@ func (us *MgoUserStore) Find(id interface{}) (u o2x.User, err error) {
 
 		u = user
 	})
+
+	if err != nil {
+		return
+	}
+
+	if u != nil {
+		addUserCache(u)
+	}
+
 	return
 }
 
@@ -123,5 +174,10 @@ func (us *MgoUserStore) UpdatePwd(id interface{}, password string) (err error) {
 		bs = bson.M{"$set": bs}
 		err = c.UpdateId(user.GetUserID(), bs)
 	})
+
+	if err != nil {
+		return
+	}
+	addUserCache(user)
 	return
 }
