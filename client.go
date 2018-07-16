@@ -6,6 +6,7 @@ package o2m
 import (
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/mgo.v2"
+	"github.com/go2s/o2x"
 )
 
 const (
@@ -24,6 +25,7 @@ type Oauth2Client struct {
 	ID     string `bson:"_id" json:"id"`
 	Secret string `bson:"secret" json:"secret"`
 	Domain string `bson:"domain" json:"domain"`
+	Scope  string `bson:"scope" json:"scope"`
 	UserID string `bson:"user_id,omitempty" json:"user_id,omitempty"`
 }
 
@@ -35,6 +37,9 @@ func (c *Oauth2Client) GetSecret() string {
 }
 func (c *Oauth2Client) GetDomain() string {
 	return c.Domain
+}
+func (c *Oauth2Client) GetScope() string {
+	return c.Scope
 }
 func (c *Oauth2Client) GetUserID() string {
 	return c.UserID
@@ -76,10 +81,15 @@ func (cs *MongoClientStore) Set(id string, cli oauth2.ClientInfo) (err error) {
 	defer session.Close()
 
 	c := session.DB(cs.db).C(cs.collection)
-	return c.Insert(&Oauth2Client{
+	client := &Oauth2Client{
 		ID:     cli.GetID(),
 		UserID: cli.GetUserID(),
 		Domain: cli.GetDomain(),
 		Secret: cli.GetSecret(),
-	})
+	}
+
+	if oauth2Client, ok := cli.(o2x.Oauth2ClientInfo); ok {
+		client.Scope = oauth2Client.GetScope()
+	}
+	return c.Insert(client)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/go2s/o2x"
 	"reflect"
 	"gopkg.in/mgo.v2/bson"
+	"github.com/golang/glog"
 )
 
 type MgoUserCfg struct {
@@ -58,6 +59,7 @@ func (us *MgoUserStore) H(handler func(c *mgo.Collection)) {
 
 func (us *MgoUserStore) Save(u o2x.User) (err error) {
 	us.H(func(c *mgo.Collection) {
+		glog.Infof("insert user:%v", u)
 		err = c.Insert(u)
 	})
 	return
@@ -65,6 +67,7 @@ func (us *MgoUserStore) Save(u o2x.User) (err error) {
 
 func (us *MgoUserStore) Remove(id interface{}) (err error) {
 	us.H(func(c *mgo.Collection) {
+		glog.Infof("remove user:%v", id)
 		mgoErr := c.RemoveId(id)
 		if mgoErr != nil && mgoErr == mgo.ErrNotFound {
 			// try to find using object id
@@ -112,7 +115,7 @@ func (us *MgoUserStore) UpdatePwd(id interface{}, password string) (err error) {
 	if err != nil {
 		return
 	}
-
+	glog.Infof("update user password %v", id)
 	user.SetRawPassword(password)
 
 	us.H(func(c *mgo.Collection) {
