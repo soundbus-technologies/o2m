@@ -11,7 +11,7 @@ import (
 
 type TokenData struct {
 	Access           string        `bson:"_id" json:"Access"`
-	ClientID         string        `bson:"ClientID" json:"ClientID"`
+	ClientID         string        `bson:"ClientId" json:"ClientId"`
 	UserID           string        `bson:"UserID" json:"UserID"`
 	RedirectURI      string        `bson:"RedirectURI,omitempty" json:"RedirectURI,omitempty"`
 	Scope            string        `bson:"Scope,omitempty" json:"Scope,omitempty"`

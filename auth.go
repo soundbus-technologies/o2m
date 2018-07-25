@@ -16,7 +16,7 @@ const (
 	idSplit                     = "__"
 )
 
-// AuthID = ClientID + "__" + UserID
+// AuthID = ClientId + "__" + UserID
 type MgoAuth struct {
 	AuthID   string `bson:"_id" json:"-"`
 	ClientID string `bson:"-" json:"client_id"`

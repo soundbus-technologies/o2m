@@ -37,6 +37,8 @@ func TestMgoUserStore(t *testing.T) {
 	us := NewUserStore(mgoSession, mgoDatabase, "user", cfg)
 
 	id := "5ae6b2005946fa106132365c"
+	mobile1 := "13344556677"
+	mobile2 := "13344556688"
 
 	fmt.Println("user id:", id)
 
@@ -48,12 +50,37 @@ func TestMgoUserStore(t *testing.T) {
 	if user == nil {
 		user = &o2x.SimpleUser{
 			UserID: bson.ObjectIdHex(id),
+			Mobile: mobile1,
 		}
 		err = us.Save(user)
 		if err != nil {
 			assert.Fail(t, err.Error())
 		}
 	}
+
+	//-------------------------------add user with duplicated mobile
+	us.Remove("user2")
+	user2 := &o2x.SimpleUser{
+		UserID: "user2",
+		Mobile: mobile1,
+	}
+	err = us.Save(user2)
+	fmt.Println(err)
+	if err == nil {
+		assert.Fail(t, "should throw mobile duplicated error")
+	}
+	//-------------------------------add user with different mobile
+	us.Remove("user3")
+	user3 := &o2x.SimpleUser{
+		UserID: "user3",
+		Mobile: mobile2,
+	}
+	err = us.Save(user3)
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
+	//-------------------------------
 
 	us.UpdatePwd(id, pass)
 

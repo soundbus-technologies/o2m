@@ -44,7 +44,7 @@ func NewTokenStore(session *mgo.Session, db string,
 	}
 
 	err = ts.c(ts.collection).EnsureIndex(mgo.Index{
-		Key: []string{"ClientID"},
+		Key: []string{"ClientId"},
 	})
 	if err != nil {
 		panic(err)
@@ -128,9 +128,9 @@ func (ts *MgoTokenStore) RemoveByRefresh(refresh string) (err error) {
 // RemoveByAccount remove exists token info by userID and clientID
 func (ts *MgoTokenStore) RemoveByAccount(userID string, clientID string) (err error) {
 	ts.H(ts.collection, func(c *mgo.Collection) {
-		err = c.Remove(bson.M{"UserID": userID, "ClientID": clientID})
+		err = c.Remove(bson.M{"UserID": userID, "ClientId": clientID})
 		if err == nil && bson.IsObjectIdHex(userID) {
-			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientID": clientID})
+			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientId": clientID})
 		}
 	})
 	return
@@ -180,9 +180,9 @@ func (ts *MgoTokenStore) GetByRefresh(refresh string) (ti oauth2.TokenInfo, err 
 
 // GetByAccount get the exists token info by userID and clientID
 func (ts *MgoTokenStore) GetByAccount(userID string, clientID string) (ti oauth2.TokenInfo, err error) {
-	ti, err = ts.GetByBson(bson.M{"UserID": userID, "ClientID": clientID})
+	ti, err = ts.GetByBson(bson.M{"UserID": userID, "ClientId": clientID})
 	if err == nil && ti == nil && bson.IsObjectIdHex(userID) {
-		ti, err = ts.GetByBson(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientID": clientID})
+		ti, err = ts.GetByBson(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientId": clientID})
 	}
 	return
 }
