@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/go2s/o2x"
   packages = ["."]
-  revision = "8a9505d5f79e6fbdf87bd801ea56471f5c2f395b"
+  revision = "371d5d2b09d003eb0d295af416034adec56a6bfa"
 
 [[projects]]
   branch = "master"
