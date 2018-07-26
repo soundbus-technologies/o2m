@@ -46,11 +46,12 @@ type MongoClientStore struct {
 }
 
 type Oauth2Client struct {
-	ID     string `bson:"_id" json:"id"`
-	Secret string `bson:"secret" json:"secret"`
-	Domain string `bson:"domain" json:"domain"`
-	Scope  string `bson:"scope" json:"scope"`
-	UserID string `bson:"user_id,omitempty" json:"user_id,omitempty"`
+	ID         string             `bson:"_id" json:"id"`
+	Secret     string             `bson:"secret" json:"secret"`
+	Domain     string             `bson:"domain" json:"domain"`
+	Scopes     []string           `bson:"scopes" json:"scopes"`
+	GrantTypes []oauth2.GrantType `bson:"grant_types" json:"grant_types"`
+	UserID     string             `bson:"user_id,omitempty" json:"user_id,omitempty"`
 }
 
 func (c *Oauth2Client) GetID() string {
@@ -62,8 +63,11 @@ func (c *Oauth2Client) GetSecret() string {
 func (c *Oauth2Client) GetDomain() string {
 	return c.Domain
 }
-func (c *Oauth2Client) GetScope() string {
-	return c.Scope
+func (c *Oauth2Client) GetScopes() []string {
+	return c.Scopes
+}
+func (c *Oauth2Client) GetGrantTypes() []oauth2.GrantType {
+	return c.GrantTypes
 }
 func (c *Oauth2Client) GetUserID() string {
 	return c.UserID
@@ -118,8 +122,9 @@ func (cs *MongoClientStore) Set(id string, cli oauth2.ClientInfo) (err error) {
 		Secret: cli.GetSecret(),
 	}
 
-	if oauth2Client, ok := cli.(o2x.Oauth2ClientInfo); ok {
-		client.Scope = oauth2Client.GetScope()
+	if o2ClientInfo, ok := cli.(o2x.O2ClientInfo); ok {
+		client.Scopes = o2ClientInfo.GetScopes()
+		client.GrantTypes = o2ClientInfo.GetGrantTypes()
 	}
 	addClientCache(client)
 	return c.Insert(client)
