@@ -51,12 +51,17 @@ func TestMgoUserStore(t *testing.T) {
 		user = &o2x.SimpleUser{
 			UserID: bson.ObjectIdHex(id),
 			Mobile: mobile1,
+			Scopes: make(map[string]string),
 		}
+		user.GetScopes()["c1"] = "read"
 		err = us.Save(user)
 		if err != nil {
 			assert.Fail(t, err.Error())
 		}
 	}
+
+	user, err = us.Find(id)
+	assert.Equal(t, "read", user.GetScopes()["c1"])
 
 	//-------------------------------add user with duplicated mobile
 	us.Remove("user2")
@@ -88,6 +93,15 @@ func TestMgoUserStore(t *testing.T) {
 
 	assert.True(t, updateUser.Match(pass))
 	assert.False(t, updateUser.Match("password"))
+
+	err = us.UpdateScope(id, "c1", "manage,admin")
+	err = us.UpdateScope(id, "c2", "operate,view")
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+	user, err = us.Find(id)
+	assert.Equal(t, "manage,admin", user.GetScopes()["c1"])
+	assert.Equal(t, "operate,view", user.GetScopes()["c2"])
 
 	err = us.Remove(id)
 	if err != nil {

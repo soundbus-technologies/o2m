@@ -255,3 +255,31 @@ func (us *MgoUserStore) UpdatePwd(id interface{}, password string) (err error) {
 	addUserCache(user)
 	return
 }
+
+func (us *MgoUserStore) UpdateScope(id interface{}, clientId, scope string) (err error) {
+	user, err := us.Find(id)
+	if err != nil {
+		return
+	}
+	glog.Infof("update user %v client %v scope %v", id, clientId, scope)
+
+	session := us.session.Clone()
+	defer session.Close()
+	c := session.DB(us.db).C(us.collection)
+
+	bs := bson.M{"scopes." + clientId: scope}
+	bs = bson.M{"$set": bs}
+	err = c.UpdateId(user.GetUserID(), bs)
+
+	if err != nil {
+		return
+	}
+
+	user, err = us.Find(id)
+	if err != nil {
+		return
+	}
+
+	addUserCache(user)
+	return
+}
