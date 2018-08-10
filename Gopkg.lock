@@ -11,11 +11,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:882c456c0a5864a439930f9378ab38e84cb15fc50500310eca8ce1fc4e4ea716"
+  digest = "1:c1fbc7aae5cd68c8e74162c1d4e542625508f8e370e717fb235593c78fd7e49d"
   name = "github.com/go2s/o2x"
   packages = ["."]
   pruneopts = ""
-  revision = "371d5d2b09d003eb0d295af416034adec56a6bfa"
+  revision = "c8c73af6966313b1f0555ae51595f9f2cbc3c28e"
 
 [[projects]]
   branch = "master"
@@ -51,14 +51,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cae234a803b78380e4d769db6036b9fcc8c08ed4ff862571ffc1a958edc1f629"
+  digest = "1:4cae11053a5fc8e7b08228fcc14d161d3e60b64ba508a8b216937da472690991"
   name = "golang.org/x/crypto"
   packages = [
     "pbkdf2",
     "scrypt",
   ]
   pruneopts = ""
-  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
+  revision = "de0752318171da717af4ce24d0a2e8626afaeb11"
 
 [[projects]]
   branch = "v2"
