@@ -9,7 +9,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"time"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/go2s/o2x"
+	"github.com/soundbus-technologies/o2x"
 )
 
 // MgoTokenStore MongoDB storage for OAuth 2.0

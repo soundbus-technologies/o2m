@@ -7,7 +7,7 @@ package o2m
 import (
 	"strings"
 	"gopkg.in/mgo.v2"
-	"github.com/go2s/o2x"
+	"github.com/soundbus-technologies/o2x"
 )
 
 const (

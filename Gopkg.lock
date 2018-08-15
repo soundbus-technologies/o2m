@@ -11,14 +11,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c1fbc7aae5cd68c8e74162c1d4e542625508f8e370e717fb235593c78fd7e49d"
-  name = "github.com/go2s/o2x"
-  packages = ["."]
-  pruneopts = ""
-  revision = "c8c73af6966313b1f0555ae51595f9f2cbc3c28e"
-
-[[projects]]
-  branch = "master"
   digest = "1:107b233e45174dbab5b1324201d092ea9448e58243ab9f039e4c0f332e121e3a"
   name = "github.com/golang/glog"
   packages = ["."]
@@ -40,6 +32,14 @@
   pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0354c6ab2f0f728349898a4fb2e8c0bca64a6443d233186eec038a235e88c09a"
+  name = "github.com/soundbus-technologies/o2x"
+  packages = ["."]
+  pruneopts = ""
+  revision = "a9b127543b4623eff1baef5997d17b31a8841443"
 
 [[projects]]
   digest = "1:c587772fb8ad29ad4db67575dad25ba17a51f072ff18a22b4f0257a4d9c24f75"
@@ -86,9 +86,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/go2s/o2x",
     "github.com/golang/glog",
     "github.com/patrickmn/go-cache",
+    "github.com/soundbus-technologies/o2x",
     "github.com/stretchr/testify/assert",
     "gopkg.in/mgo.v2",
     "gopkg.in/mgo.v2/bson",

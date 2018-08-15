@@ -6,7 +6,7 @@ package o2m
 import (
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/mgo.v2"
-	"github.com/go2s/o2x"
+	"github.com/soundbus-technologies/o2x"
 	"github.com/patrickmn/go-cache"
 	"time"
 )

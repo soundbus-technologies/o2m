@@ -8,7 +8,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/go2s/o2x"
+	"github.com/soundbus-technologies/o2x"
 	"fmt"
 )
 

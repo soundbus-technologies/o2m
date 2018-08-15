@@ -6,7 +6,7 @@ package o2m
 
 import (
 	"gopkg.in/mgo.v2"
-	"github.com/go2s/o2x"
+	"github.com/soundbus-technologies/o2x"
 	"reflect"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/golang/glog"
