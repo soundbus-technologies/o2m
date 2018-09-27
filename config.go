@@ -14,6 +14,9 @@ type MongoConfig struct {
 	PoolLimit int
 }
 
+/**
+返回一个mongodb的session
+ */
 func NewMongoSession(cfg *MongoConfig) *mgo.Session {
 	dialInfo := &mgo.DialInfo{
 		Addrs:    cfg.Addrs,

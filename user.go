@@ -5,14 +5,14 @@
 package o2m
 
 import (
-	"gopkg.in/mgo.v2"
-	"github.com/soundbus-technologies/o2x"
-	"reflect"
-	"gopkg.in/mgo.v2/bson"
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/patrickmn/go-cache"
+	"github.com/soundbus-technologies/o2x"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"reflect"
 	"time"
-	"fmt"
 )
 
 var (
@@ -55,8 +55,8 @@ type MgoUserCfg struct {
 
 // used to control the unique mobile for one user if exists
 type MgoUserMobile struct {
-	Id     string `bson:"_id" json:"_id"`
-	Mobile string `bson:"mobile" json:"mobile"`
+	Id     string `bson:"_id" json:"_id"`       //用户id
+	Mobile string `bson:"mobile" json:"mobile"` //手机号码
 }
 
 type MgoUserStore struct {
@@ -98,6 +98,9 @@ func NewUserStore(session *mgo.Session, db, collection string, userCfg *MgoUserC
 	return
 }
 
+/**
+绑定一条用户手机记录
+*/
 func (us *MgoUserStore) lockUserMobile(session *mgo.Session, userId, mobile string) (err error) {
 	if userId == "" || mobile == "" {
 		err = o2x.ErrValueRequired
@@ -125,6 +128,9 @@ func (us *MgoUserStore) unlockUserMobile(session *mgo.Session, userId string) (e
 	return
 }
 
+/**
+保存用户并将用户信息存入缓存cache
+*/
 func (us *MgoUserStore) Save(u o2x.User) (err error) {
 	session := us.session.Clone()
 	defer session.Close()
@@ -158,10 +164,12 @@ func (us *MgoUserStore) Remove(id interface{}) (err error) {
 	if err != nil {
 		return
 	}
-
 	glog.Infof("remove user:%v", id)
+
+	//解绑用户手机
 	us.unlockUserMobile(session, sid)
 
+	//删除用户，先用objectId 如果不成，后用string类型
 	mgoErr := c.RemoveId(id)
 	if mgoErr != nil && mgoErr == mgo.ErrNotFound {
 		// try to find using object id

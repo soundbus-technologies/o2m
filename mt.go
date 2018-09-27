@@ -5,12 +5,14 @@
 package o2m
 
 import (
-	"time"
 	"gopkg.in/oauth2.v3"
+	"time"
 )
 
+/**
+token数据对象
+*/
 type TokenData struct {
-	Access           string        `bson:"_id" json:"Access"`
 	ClientID         string        `bson:"ClientId" json:"ClientId"`
 	UserID           string        `bson:"UserID" json:"UserID"`
 	RedirectURI      string        `bson:"RedirectURI,omitempty" json:"RedirectURI,omitempty"`
@@ -18,8 +20,9 @@ type TokenData struct {
 	Code             string        `bson:"Code,omitempty" json:"Code,omitempty"`
 	CodeCreateAt     time.Time     `bson:"CodeCreateAt" json:"CodeCreateAt"`
 	CodeExpiresIn    time.Duration `bson:"CodeExpiresIn" json:"CodeExpiresIn"`
+	Access           string        `bson:"_id" json:"Access"` //token
 	AccessCreateAt   time.Time     `bson:"AccessCreateAt" json:"AccessCreateAt"`
-	AccessExpiresIn  time.Duration `bson:"AccessExpiresIn" json:"AccessExpiresIn"`
+	AccessExpiresIn  time.Duration `bson:"AccessExpiresIn" json:"AccessExpiresIn"` //token有效期限
 	Refresh          string        `bson:"Refresh,omitempty" json:"Refresh,omitempty"`
 	RefreshCreateAt  time.Time     `bson:"RefreshCreateAt,omitempty" json:"RefreshCreateAt,omitempty"`
 	RefreshExpiresIn time.Duration `bson:"RefreshExpiresIn,omitempty" json:"RefreshExpiresIn,omitempty"`
@@ -42,6 +45,7 @@ func Copy(info oauth2.TokenInfo) (token *TokenData) {
 		RefreshCreateAt:  info.GetRefreshCreateAt(),
 		RefreshExpiresIn: info.GetRefreshExpiresIn(),
 	}
+
 	if code := info.GetCode(); code != "" {
 		token.ExpiredAt = info.GetCodeCreateAt().Add(info.GetCodeExpiresIn())
 	} else {

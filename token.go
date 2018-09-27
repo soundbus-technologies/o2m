@@ -5,11 +5,11 @@
 package o2m
 
 import (
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/mgo.v2"
-	"time"
-	"gopkg.in/mgo.v2/bson"
 	"github.com/soundbus-technologies/o2x"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/oauth2.v3"
+	"time"
 )
 
 // MgoTokenStore MongoDB storage for OAuth 2.0
@@ -20,14 +20,14 @@ type MgoTokenStore struct {
 }
 
 // NewTokenStore create a token store instance based on mongodb
-func NewTokenStore(session *mgo.Session, db string,
-	collection string) (store oauth2.TokenStore) {
+func NewTokenStore(session *mgo.Session, db string, collection string) (store oauth2.TokenStore) {
 	ts := &MgoTokenStore{
 		session:    session,
 		db:         db,
 		collection: collection,
 	}
 
+	//添加索引
 	err := ts.c(ts.collection).EnsureIndex(mgo.Index{
 		Key:         []string{"ExpiredAt"},
 		ExpireAfter: time.Second * 1,
