@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/soundbus-technologies/o2x"
   packages = ["."]
-  revision = "c95cf832391c55e4e35e4cb80a6a3a0aa8024256"
+  revision = "5c18ea79139e29f9c494f35977c620567f8f45cd"
 
 [[projects]]
   name = "github.com/stretchr/testify"

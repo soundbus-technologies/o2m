@@ -136,6 +136,17 @@ func (ts *MgoTokenStore) RemoveByAccount(userID string, clientID string) (err er
 	return
 }
 
+// RemoveByAccount remove exists token info by userID
+func (ts *MgoTokenStore) RemoveByAccountNoClient(userID string) (err error) {
+	ts.H(ts.collection, func(c *mgo.Collection) {
+		err = c.Remove(bson.M{"UserID": userID})
+		if err == nil && bson.IsObjectIdHex(userID) {
+			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID)})
+		}
+	})
+	return
+}
+
 // GetByField use field value for token information data
 func (ts *MgoTokenStore) GetByBson(m bson.M) (ti oauth2.TokenInfo, err error) {
 	ts.H(ts.collection, func(c *mgo.Collection) {
