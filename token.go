@@ -128,9 +128,9 @@ func (ts *MgoTokenStore) RemoveByRefresh(refresh string) (err error) {
 // RemoveByAccount remove exists token info by userID and clientID
 func (ts *MgoTokenStore) RemoveByAccount(userID string, clientID string) (err error) {
 	ts.H(ts.collection, func(c *mgo.Collection) {
-		err = c.Remove(bson.M{"UserID": userID, "ClientId": clientID})
+		_, err = c.RemoveAll(bson.M{"UserID": userID, "ClientId": clientID})
 		if err == nil && bson.IsObjectIdHex(userID) {
-			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientId": clientID})
+			_, err = c.RemoveAll(bson.M{"UserID": bson.ObjectIdHex(userID), "ClientId": clientID})
 		}
 	})
 	return
@@ -139,9 +139,9 @@ func (ts *MgoTokenStore) RemoveByAccount(userID string, clientID string) (err er
 // RemoveByAccount remove exists token info by userID
 func (ts *MgoTokenStore) RemoveByAccountNoClient(userID string) (err error) {
 	ts.H(ts.collection, func(c *mgo.Collection) {
-		err = c.Remove(bson.M{"UserID": userID})
+		_, err = c.RemoveAll(bson.M{"UserID": userID})
 		if err == nil && bson.IsObjectIdHex(userID) {
-			err = c.Remove(bson.M{"UserID": bson.ObjectIdHex(userID)})
+			_, err = c.RemoveAll(bson.M{"UserID": bson.ObjectIdHex(userID)})
 		}
 	})
 	return
