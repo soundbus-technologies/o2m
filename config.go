@@ -1,8 +1,8 @@
 package o2m
 
 import (
-	"gopkg.in/mgo.v2"
 	"github.com/golang/glog"
+	"gopkg.in/mgo.v2"
 )
 
 // Config mongodb configuration parameters
@@ -14,9 +14,9 @@ type MongoConfig struct {
 	PoolLimit int
 }
 
-/**
+/*
 返回一个mongodb的session
- */
+*/
 func NewMongoSession(cfg *MongoConfig) *mgo.Session {
 	dialInfo := &mgo.DialInfo{
 		Addrs:    cfg.Addrs,

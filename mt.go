@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-/**
+/*
 token数据对象
 */
 type TokenData struct {

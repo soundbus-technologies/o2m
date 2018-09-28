@@ -98,7 +98,7 @@ func NewUserStore(session *mgo.Session, db, collection string, userCfg *MgoUserC
 	return
 }
 
-/**
+/*
 绑定一条用户手机记录
 */
 func (us *MgoUserStore) lockUserMobile(session *mgo.Session, userId, mobile string) (err error) {
@@ -128,7 +128,7 @@ func (us *MgoUserStore) unlockUserMobile(session *mgo.Session, userId string) (e
 	return
 }
 
-/**
+/*
 保存用户并将用户信息存入缓存cache
 */
 func (us *MgoUserStore) Save(u o2x.User) (err error) {

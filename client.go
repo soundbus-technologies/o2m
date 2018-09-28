@@ -73,7 +73,7 @@ func (c *Oauth2Client) GetUserID() string {
 	return c.UserID
 }
 
-/**
+/*
 新建一个client的mongodb链接
 */
 func NewClientStore(session *mgo.Session, db string, collection string) (clientStore *MongoClientStore) {
