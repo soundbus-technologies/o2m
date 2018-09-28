@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/soundbus-technologies/o2x"
   packages = ["."]
-  revision = "5c18ea79139e29f9c494f35977c620567f8f45cd"
+  revision = "0f1633d363235dc688e8fb27bb0cd3f4aa0dc475"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -44,7 +44,7 @@
     "pbkdf2",
     "scrypt"
   ]
-  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
+  revision = "5295e8364332db77d75fce11f1d19c053919a9c9"
 
 [[projects]]
   branch = "v2"
